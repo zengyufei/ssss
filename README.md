@@ -60,3 +60,11 @@
             可以添加 @SortUni 注解解决唯一性问题, 
             可以参考 dict 和 department,都有使用该注解
             添加注解后, 在 sql 查询时会自动拼接该字段对应的数据库表名称
+
+
+### 部门管理
+[部门管理](https://github.com/zengyufei/ssss/blob/main/images/dept.png)
+
+
+### 字典管理
+[字典管理](https://github.com/zengyufei/ssss/blob/main/images/dict.png)
