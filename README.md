@@ -63,8 +63,8 @@
 
 
 ### 部门管理
-[部门管理](https://github.com/zengyufei/ssss/blob/main/images/dept.png)
+![部门管理](https://github.com/zengyufei/ssss/blob/main/images/dept.png)
 
 
 ### 字典管理
-[字典管理](https://github.com/zengyufei/ssss/blob/main/images/dict.png)
+![字典管理](https://github.com/zengyufei/ssss/blob/main/images/dict.png)
