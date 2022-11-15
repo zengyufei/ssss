@@ -26,16 +26,14 @@ hs_err_pid*
 
 .idea/
 *.iml
+demo4031-mybatisplus.iml
 .factorypath
 /fsjt-client/unpackage
 **/target
 **/target/**
 
+
 fsjt-client/unpackage/cache/**
 fsjt-client/unpackage/dist
 fsjt-client/unpackage/dist/**
-/xm-common/xm-auth/src/main/resources/rebel.xml
-/xm-common/xm-core/src/main/resources/rebel.xml
-/xm-common/xm-execl/src/main/resources/rebel.xml
-/xm-common/xm-orm/src/main/resources/rebel.xml
-/xm-common/xm-test/src/main/resources/rebel.xml
+/target/
