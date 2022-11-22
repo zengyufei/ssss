@@ -51,7 +51,7 @@
             <dependency>
                 <groupId>org.noear</groupId>
                 <artifactId>solon-parent</artifactId>
-                <version>1.10.11-M1</version>
+                <version>1.11.0</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -71,36 +71,48 @@
         </resources>
         <pluginManagement>
             <plugins>
-                <plugin>
-                    <groupId>org.mybatis.generator</groupId>
-                    <artifactId>mybatis-generator-maven-plugin</artifactId>
-                    <version>1.3.2</version>
-                    <configuration>
-                        <verbose>true</verbose>
-                        <overwrite>true</overwrite>
-                    </configuration>
-                </plugin>
 
+                <!-- 配置编译插件 -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.8.1</version>
-                    <configuration>
-                        <compilerArgument>-parameters</compilerArgument>
-                        <source>1.8</source>
-                        <target>1.8</target>
-                        <encoding>UTF-8</encoding>
-                    </configuration>
                 </plugin>
+
+                <!-- 配置打包插件（设置主类，并打包成胖包） -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>3.3.0</version>
+                </plugin>
+
             </plugins>
         </pluginManagement>
 
     </build>
 
-    <!--<pluginRepositories>
+    <!--
+   使用时，可以项目的 pom.xml 里添加 repositories 内容
+   -->
+
+    <pluginRepositories>
         <pluginRepository>
-            <id>aliyun-plugin</id>
-            <url>https://maven.aliyun.com/repository/public</url>
+            <id>tencent</id>
+            <name>tencent maven</name>
+            <url>http://mirrors.cloud.tencent.com/nexus/repository/maven-public/</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <id>repo1</id>
+            <name>repo1 maven</name>
+            <url>https://repo1.maven.org/maven2/</url>
+            <layout>default</layout>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -111,12 +123,29 @@
     </pluginRepositories>
 
     <repositories>
-        &lt;!&ndash;阿里云代理&ndash;&gt;
         <repository>
-            <id>aliyun</id>
-            <name>aliyun</name>
-            <url>http://maven.aliyun.com/nexus/content/groups/public</url>
+            <id>tencent</id>
+            <name>tencent maven</name>
+            <url>http://mirrors.cloud.tencent.com/nexus/repository/maven-public/</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
-    </repositories>-->
-
+        <repository>
+            <id>repo1</id>
+            <name>repo1 maven</name>
+            <url>https://repo1.maven.org/maven2/</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 </project>

@@ -51,7 +51,7 @@ public class XmUtil {
             .build();
 
 
-    public static  <T> String getField(XmMap.SFunction<T, ?> fn) {
+    public static <T> String getField(XmMap.SFunction<T, ?> fn) {
         return XmMap.getField(fn);
     }
 
@@ -71,7 +71,7 @@ public class XmUtil {
         auditFunc.audit(changeEduMap);
     }
 
-//    public static void setVar(String key, Object o) {
+    //    public static void setVar(String key, Object o) {
 //        RequestContextHolder.currentRequestAttributes().setAttribute(key, o, RequestAttributes.SCOPE_REQUEST);
 //    }
 //
@@ -275,14 +275,9 @@ public class XmUtil {
                 if (StrUtil.isBlank(orderColumnAndSort)) {
                     continue;
                 }
-                final List<String> keyVal;
-                if (StrUtil.contains(orderColumnAndSort, "-")) {
-                    keyVal = StrUtil.split(orderColumnAndSort, '-');
-                } else {
-                    keyVal = StrUtil.split(orderColumnAndSort, '_');
-                }
-                final String requestProperty = keyVal.get(0);
-                String requestOrder = keyVal.get(1);
+                final List<String> keyVal = getOrderBySplit(orderColumnAndSort);
+                final String requestProperty = StrUtil.trim(keyVal.get(0));
+                String requestOrder = StrUtil.trim(keyVal.get(1));
 
 
                 // 判断列名称的合法性，防止SQL注入。只能是【字母，数字，下划线】
@@ -302,6 +297,21 @@ public class XmUtil {
         }
     }
 
+    private static List<String> getOrderBySplit(String orderColumnAndSort) {
+        final List<String> keyVal;
+        if (StrUtil.contains(orderColumnAndSort, ":")) {
+            keyVal = StrUtil.split(orderColumnAndSort, ':');
+        } else if (StrUtil.contains(orderColumnAndSort, "-")) {
+            keyVal = StrUtil.split(orderColumnAndSort, '-');
+        } else {
+            keyVal = StrUtil.split(orderColumnAndSort, '_');
+        }
+//        else {
+//            throw new RuntimeException("没有匹配到分隔符 : - _ 三种之一");
+//        }
+        return keyVal;
+    }
+
     public static <T> void addOrderBy(String sort, LambdaQueryWrapper<T> lambda, Class<T> clazz) {
         if (StrUtil.isNotBlank(sort)) {
             if (clazz == null) {
@@ -312,14 +322,9 @@ public class XmUtil {
                 if (StrUtil.isBlank(orderColumnAndSort)) {
                     continue;
                 }
-                final List<String> keyVal;
-                if (StrUtil.contains(orderColumnAndSort, "-")) {
-                    keyVal = StrUtil.split(orderColumnAndSort, '-');
-                } else {
-                    keyVal = StrUtil.split(orderColumnAndSort, '_');
-                }
-                final String requestProperty = keyVal.get(0);
-                String requestOrder = keyVal.get(1);
+                final List<String> keyVal = getOrderBySplit(orderColumnAndSort);
+                final String requestProperty = StrUtil.trim(keyVal.get(0));
+                String requestOrder = StrUtil.trim(keyVal.get(1));
 
                 // 判断列名称的合法性，防止SQL注入。只能是【字母，数字，下划线】
                 if (!requestProperty.matches("[A-Za-z0-9_]+")) {
@@ -342,7 +347,6 @@ public class XmUtil {
     }
 
 
-
     public static String getOrderByStr(String orderBy, Class<?> clazz) {
         if (StrUtil.isBlank(orderBy)) {
             return null;
@@ -358,24 +362,30 @@ public class XmUtil {
         StringBuilder stringBuilder = new StringBuilder();
         final List<String> split = StrUtil.split(orderBy, ',');
 
+        int skipNum = 0;
         boolean isAppend = false;
         for (final String orderColumnAndSort : split) {
             if (StrUtil.isBlank(orderColumnAndSort)) {
+                skipNum++;
                 continue;
             }
-            final List<String> keyVal;
-            if (StrUtil.contains(orderColumnAndSort, "-")) {
-                keyVal = StrUtil.split(orderColumnAndSort, '-');
-            } else {
-                keyVal = StrUtil.split(orderColumnAndSort, '_');
+            final String ascStr = "ASC";
+            final String descStr = "DESC";
+            final List<String> keyVal = getOrderBySplit(orderColumnAndSort);
+            final String requestProperty = StrUtil.trim(keyVal.get(0));
+            String requestOrder = keyVal.size() == 1 ? ascStr : StrUtil.trim(keyVal.get(1));
+
+            if (StrUtil.isBlank(requestProperty)) {
+                skipNum++;
+                continue;
             }
-            final String requestProperty = keyVal.get(0);
-            String requestOrder = keyVal.get(1);
 
             if (StrUtil.isBlank(requestOrder)) {
-                requestOrder = "ASC";
-            } else if (!(StrUtil.equalsIgnoreCase(requestOrder, "ASC") || StrUtil.equalsIgnoreCase(requestOrder, "DESC"))) {
-                throw new IllegalArgumentException("非法的排序策略：" + requestProperty);
+                requestOrder = ascStr;
+            } else {
+                if (!(StrUtil.equalsIgnoreCase(requestOrder, ascStr) || StrUtil.equalsIgnoreCase(requestOrder, descStr))) {
+                    throw new IllegalArgumentException("非法的排序策略：" + requestProperty);
+                }
             }
 
             // 判断列名称的合法性，防止SQL注入。只能是【字母，数字，下划线】
@@ -389,12 +399,18 @@ public class XmUtil {
 
             if (fieldNameByTableFieldMap.containsKey(requestProperty)) {
                 final String column = fieldNameByTableFieldMap.get(requestProperty);
-                stringBuilder.append(column).append(" ").append(requestOrder);
+                stringBuilder.append(column).append(" ").append(requestOrder.toUpperCase());
                 isAppend = true;
+            } else {
+                skipNum++;
             }
+        }
+        if (skipNum == split.size()) {
+            return null;
         }
         return stringBuilder.toString();
     }
+
 
     // =================================================================================================================
     // =================================================================================================================
@@ -689,7 +705,7 @@ public class XmUtil {
         }
     }
 
-    public static   <T> SFunction<T, ?> getSFunction(Class<T> clazz, XmMap.SFunction<T, Object> sFunction) {
+    public static <T> SFunction<T, ?> getSFunction(Class<T> clazz, XmMap.SFunction<T, Object> sFunction) {
         final Method disabledMethod = BeanUtil.getBeanDesc(clazz).getGetter(XmUtil.getField(sFunction));
         return SFunctionUtil.create(clazz, disabledMethod);
     }

@@ -20,28 +20,3 @@ mybatis.db1:
     mappers:        #支持包名 或 类名（.class 结尾）或 xml（.xml结尾 或 *.xml 结尾）
         - "mybatis/db1/*.xml"
 #        - "com.xunmo.webs.*.mapper"
-    configuration:
-        cacheEnabled: false
-        # 下划线自动转驼峰
-        mapUnderscoreToCamelCase: true
-#        logImpl: org.apache.ibatis.logging.nologging.NoLoggingImpl
-        #logImpl: com.xunmo.config.mybatisplus.MybatisStdOutImpl
-    globalConfig:
-        banner: false
-        enable-sql-runner: true
-        #sqlInjector: "com.xunmo.config.mybatisplus.MyLogicSqlInjector"
-        #metaObjectHandler: "com.xunmo.config.mybatisplus.MetaObjectHandlerImpl"
-        dbConfig:
-            logicDeleteField: "deleted"
-            logicDeleteValue: "2"
-
-
-
-#分页组件的配置
-pagehelper:
-    offsetAsPageNum: true
-    rowBoundsWithCount: true
-    pageSizeZero: true
-    reasonable: true
-    params: pageNum=pageNo;
-    supportMethodsArguments: false

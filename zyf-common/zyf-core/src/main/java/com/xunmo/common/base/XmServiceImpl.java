@@ -19,6 +19,7 @@ import com.github.pagehelper.ISelect;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.xunmo.common.PageParam;
+import com.xunmo.utils.XmUtil;
 import org.apache.ibatis.binding.MapperMethod.ParamMap;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
@@ -66,7 +67,10 @@ public class XmServiceImpl<M extends XmMapper<T>, T> implements XmService<T> {
             pageParam.setPageSize(0);
         }
         final Integer pageSize = pageParam.getPageSize();
-        final Page<E> page = PageHelper.startPage(pageParam.getPageNo(), pageSize, pageSize != 0).doSelectPage(select);
+        final String orderBy = pageParam.getOrderBy();
+        final Page<E> page = PageHelper.startPage(pageParam.getPageNo(), pageSize, pageSize != 0)
+                .setOrderBy(XmUtil.getOrderByStr(orderBy, entityClass))
+                .doSelectPage(select);
         context.attrSet("page", page);
         return page;
     }

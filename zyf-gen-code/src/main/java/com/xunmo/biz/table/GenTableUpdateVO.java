@@ -1,5 +1,6 @@
 package com.xunmo.biz.table;
 
+import com.xunmo.biz.kv.GenKv;
 import lombok.Data;
 
 import java.io.Serializable;

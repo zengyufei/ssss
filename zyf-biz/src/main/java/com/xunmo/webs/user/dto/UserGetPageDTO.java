@@ -13,5 +13,4 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = true)
 public class UserGetPageDTO extends UserDO<User> {
 
-
 }

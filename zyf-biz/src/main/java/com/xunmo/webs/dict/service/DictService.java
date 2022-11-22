@@ -13,8 +13,10 @@ import com.xunmo.webs.dict.dto.DictGetPageDTO;
 import com.xunmo.webs.dict.dto.DictUpdateDTO;
 import com.xunmo.webs.dict.entity.Dict;
 import com.xunmo.webs.dict.mapper.DictMapper;
+import org.noear.solon.annotation.Inject;
 import org.noear.solon.aspect.annotation.Service;
 import org.noear.solon.data.annotation.Tran;
+import org.noear.solon.data.tran.TranUtils;
 
 import java.util.List;
 
@@ -25,6 +27,48 @@ import java.util.List;
  */
 @Service
 public class DictService extends XmSimpleMoveServiceImpl<DictMapper, Dict> implements XmSimpleMoveService<Dict> {
+
+    @Inject(value = "${solon.app.name}")
+    private String appName;
+
+    /**
+     * 获取列表
+     *
+     * @param dictGetPageDTO dict获取页面dto
+     * @return {@link List}<{@link Dict}>
+     */
+    public List<Dict> getList(DictGetPageDTO dictGetPageDTO) {
+        final boolean inTrans = TranUtils.inTrans();
+        System.out.println("getList 事务状态: " + inTrans);
+        System.out.println(appName);
+        final Dict dict = dictGetPageDTO.toEntity();
+        return startPage(() -> this.baseMapper.selectList(Wrappers.lambdaQuery(dict)));
+    }
+
+    /**
+     * 添加
+     *
+     * @param dict dict
+     * @return {@link Dict}
+     */
+//    @Tran
+    public Dict add(Dict dict) throws Exception{
+        final boolean inTrans = TranUtils.inTrans();
+        System.out.println("add 事务状态: " + inTrans);
+        final String parentId = StrUtil.blankToDefault(dict.getParentId(), "-1");
+        dict.setParentId(parentId);
+        int max = this.baseMapper.getMax(dict);
+        dict.setSort(max + 1);
+        if (StrUtil.equals("-1", parentId)) {
+            dict.setDicLevel(1);
+        } else {
+            final Dict parentDict = this.checkAndGet(parentId);
+            Integer parentLevel = parentDict.getDicLevel();
+            dict.setDicLevel(++parentLevel);
+        }
+        this.baseMapper.insert(dict);
+        return dict;
+    }
 
     /**
      * 获取树
@@ -51,40 +95,6 @@ public class DictService extends XmSimpleMoveServiceImpl<DictMapper, Dict> imple
             // 扩展属性 ...
 //            tree.putExtra("sectionId", treeNode.getSectionId());
         });
-    }
-
-    /**
-     * 获取列表
-     *
-     * @param dictGetPageDTO dict获取页面dto
-     * @return {@link List}<{@link Dict}>
-     */
-    public List<Dict> getList(DictGetPageDTO dictGetPageDTO) {
-        final Dict dict = dictGetPageDTO.toEntity();
-        return startPage(() -> this.baseMapper.selectList(Wrappers.lambdaQuery(dict)));
-    }
-
-    /**
-     * 添加
-     *
-     * @param dict dict
-     * @return {@link Dict}
-     */
-    @Tran
-    public Dict add(Dict dict) throws Exception{
-        final String parentId = StrUtil.blankToDefault(dict.getParentId(), "-1");
-        dict.setParentId(parentId);
-        int max = this.baseMapper.getMax(dict);
-        dict.setSort(max + 1);
-        if (StrUtil.equals("-1", parentId)) {
-            dict.setDicLevel(1);
-        } else {
-            final Dict parentDict = this.checkAndGet(parentId);
-            Integer parentLevel = parentDict.getDicLevel();
-            dict.setDicLevel(++parentLevel);
-        }
-        this.baseMapper.insert(dict);
-        return dict;
     }
 
     /**

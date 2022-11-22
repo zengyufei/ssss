@@ -1,0 +1,22 @@
+
+#默认
+mybatis.db1:
+  configuration:
+    cacheEnabled: false
+    # 下划线自动转驼峰
+    mapUnderscoreToCamelCase: true
+  globalConfig:
+    banner: false
+    enable-sql-runner: true
+    dbConfig:
+      logicDeleteField: "deleted"
+      logicDeleteValue: "1"
+
+#分页组件的配置
+pagehelper:
+  offsetAsPageNum: true
+  rowBoundsWithCount: true
+  pageSizeZero: true
+  reasonable: true
+  params: pageNum=pageNo;
+  supportMethodsArguments: false
